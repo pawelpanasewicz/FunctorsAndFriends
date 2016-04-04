@@ -137,10 +137,45 @@ class UnderstandingFunctors extends ynfrastructure.Spec {
       //or prettier:
       implicit def autoComposedFunctor[A[_] : Functor, B[_] : Functor]: Functor[Lambda[a => A[B[a]]]] = Functor[A] compose Functor[B]
       Functor[Lambda[a => List[Option[a]]]] //here works
+      //Functor[Lambda[a => List[List[Option[a]]]]]  //but this one doesn't want to cooperate :/
+      implicit def autoComposedFunctor2[
+      A0[_] : Functor,
+      A1[_] : Functor,
+      A2[_] : Functor
+      ]: Functor[Lambda[a => A0[A1[A2[a]]]]] = Functor[A0]
+          .compose(Functor[A1])
+          .compose(Functor[A2])
 
-//        implicit val x: Functor[({type Λ$[a] = scala.List[_root_.scala.Option[a]]})#Λ$] = Functor[Lambda[a => List[Option[a]]]]
+      Functor[Lambda[a => List[List[Option[a]]]]] //Now it's ready to work
 
-      //      Functor[Lambda[a => List[List[Option[a]]]]]  //this doesn't want to cooperate :/
+      //let's follow the boilerplate pattern:
+
+      implicit def autoComposedFunctor3[
+      A0[_] : Functor,
+      A1[_] : Functor,
+      A2[_] : Functor,
+      A3[_] : Functor
+      ]: Functor[Lambda[a => A0[A1[A2[A3[a]]]]]] = Functor[A0]
+        .compose(Functor[A1])
+        .compose(Functor[A2])
+        .compose(Functor[A3])
+
+      implicit def autoComposedFunctor4[
+      A0[_] : Functor,
+      A1[_] : Functor,
+      A2[_] : Functor,
+      A3[_] : Functor,
+      A4[_] : Functor
+      ]: Functor[Lambda[a => A0[A1[A2[A3[A4[a]]]]]]] = Functor[A0]
+        .compose(Functor[A1])
+        .compose(Functor[A2])
+        .compose(Functor[A3])
+        .compose(Functor[A4])
+
+
+      Functor[Lambda[a => List[Option[List[List[Option[a]]]]]]].map(List(Some(List(List(Some("a"), None, Some("b"))))))(_.toUpperCase()) mustBe List(Some(List(List(Some("A"), None, Some("B")))))
+
+      //Functor[Lambda[a=>Option[List[Option[List[List[Option[a]]]]]]]] //this one needs autoCompoesd5
 
     }
   }
