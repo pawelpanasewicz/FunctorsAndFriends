@@ -178,5 +178,18 @@ class UnderstandingFunctors extends ynfrastructure.Spec {
       //Functor[Lambda[a=>Option[List[Option[List[List[Option[a]]]]]]]] //this one needs autoCompoesd5
 
     }
+
+    "functor maps almost like monad transformer (but does not flatmap)" in {
+      import cats.std.either._
+      import cats.std.option._
+
+      val rsome : Either[String, Option[Int]] = Right(Some(10))
+      val rnone : Either[String, Option[Int]] = Right(None)
+      val left : Either[String, Option[Int]] = Left("no no no")
+
+      val f1: Functor[Lambda[a => Either[String, Option[a]]]] = Functor[Lambda[a => Either[String, a]]] compose Functor[Option]
+
+      f1.map(rsome)(_+10) mustBe Right(Some(20))
+    }
   }
 }
