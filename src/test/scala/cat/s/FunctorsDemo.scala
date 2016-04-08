@@ -1,6 +1,6 @@
 package cat.s
 
-class UnderstandingFunctors extends ynfrastructure.Spec {
+class FunctorsDemo extends ynfrastructure.Spec {
 
   "Functor" - {
     import cats.Functor
@@ -183,13 +183,25 @@ class UnderstandingFunctors extends ynfrastructure.Spec {
       import cats.std.either._
       import cats.std.option._
 
-      val rsome : Either[String, Option[Int]] = Right(Some(10))
-      val rnone : Either[String, Option[Int]] = Right(None)
-      val left : Either[String, Option[Int]] = Left("no no no")
+      val rsome: Either[String, Option[Int]] = Right(Some(10))
+      val rnone: Either[String, Option[Int]] = Right(None)
+      val left: Either[String, Option[Int]] = Left("no no no")
 
       val f1: Functor[Lambda[a => Either[String, Option[a]]]] = Functor[Lambda[a => Either[String, a]]] compose Functor[Option]
 
-      f1.map(rsome)(_+10) mustBe Right(Some(20))
+      f1.map(rsome)(_ + 10) mustBe Right(Some(20))
+    }
+
+    "syntax for functor" in {
+
+      //Right[String, Int](10).map(_+1) //compile error:value map is not a member of scala.util.Right[String,Int]
+
+      import cats._
+      import cats.syntax.functor._
+      import cats.std.either._
+
+
+      Functor[Either[String,?]].map(Right[String, Int](10): Either[String, Int])(_+1)
     }
   }
 }

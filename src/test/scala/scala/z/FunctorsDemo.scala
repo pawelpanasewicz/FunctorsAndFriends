@@ -1,6 +1,6 @@
 package scala.z
 
-class UnderstandingFunctors extends ynfrastructure.Spec{
+class FunctorsDemo extends ynfrastructure.Spec{
 
   "Simple fun with functors" in {
 
