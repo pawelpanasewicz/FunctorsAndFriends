@@ -1,7 +1,6 @@
 lazy val root = (project in file(".")).
   settings(
-    organization := "com.example",
-    name := "something",
+    name := "FunctorsAndFriends",
     scalaVersion := "2.11.6",
     libraryDependencies ++= Seq(
       "org.spire-math" %% "cats" % catsVersion,
