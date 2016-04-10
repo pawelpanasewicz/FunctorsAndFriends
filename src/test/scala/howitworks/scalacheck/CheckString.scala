@@ -3,7 +3,7 @@ package howitworks.scalacheck
 import org.scalacheck
 import org.scalacheck.{Arbitrary, Gen}
 
-object HelloScalaCheck extends scalacheck.Properties("String") {
+object CheckString extends scalacheck.Properties("String") {
 
   property("startsWith") = scalacheck.Prop.forAll { (a: String, b: String) =>
     (a + b).startsWith(a)
@@ -15,7 +15,7 @@ object HelloScalaCheck extends scalacheck.Properties("String") {
 
 }
 
-object SomethingCheck extends scalacheck.Properties("Something") {
+object CheckSomething extends scalacheck.Properties("Something") {
 
   property("I am contains 'am'") = scalacheck.Prop.forAll { (value: String) =>
     Something(value).IAm.contains("am")
