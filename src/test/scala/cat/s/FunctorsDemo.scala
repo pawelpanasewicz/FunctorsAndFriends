@@ -5,12 +5,12 @@ class FunctorsDemo extends ynfrastructure.Spec {
   "Functor" - {
     import cats.Functor
     "map" in {
-      import cats.std.option._
+      import cats.instances.option._
       //import standard instances of typeclasses for option. This includes functor instance for option
 
       Functor[Option].map(Some("sialababamak"))(_.toUpperCase()) mustBe Some("SIALABABAMAK")
 
-      import cats.std.list._
+      import cats.instances.list._
       //import standard instance for List
 
       Functor[List].map(List(1, 2, 3))(_ + 1) mustBe List(2, 3, 4)
@@ -33,8 +33,8 @@ class FunctorsDemo extends ynfrastructure.Spec {
     }
 
     "composing functors" in {
-      import cats.std.list._
-      import cats.std.option._
+      import cats.instances.list._
+      import cats.instances.option._
 
       //Functor[List[Option]] // won't compile with error 'List[Option] takes no type parameters, expected: one'. Let's fix it:
 
@@ -81,8 +81,8 @@ class FunctorsDemo extends ynfrastructure.Spec {
     }
 
     "more fun with functors - let's change sub container" in {
-      import cats.std.list._
-      import cats.std.option._
+      import cats.instances.list._
+      import cats.instances.option._
 
       val complexContainer = List(
         List(
@@ -113,8 +113,8 @@ class FunctorsDemo extends ynfrastructure.Spec {
     }
 
     "kind projections" in {
-      import cats.std.list._
-      import cats.std.option._
+      import cats.instances.list._
+      import cats.instances.option._
       implicit val looFunctor = Functor[List] compose Functor[Option] compose Functor[Option]
 
       //      Functor[List[Option[Option]]]  //will not compile, because of 'List[Option[Option]] takes no type parameters, expected: one'
@@ -129,8 +129,8 @@ class FunctorsDemo extends ynfrastructure.Spec {
     }
 
     "experiment - auto composing functors" in {
-      import cats.std.list._
-      import cats.std.option._
+      import cats.instances.list._
+      import cats.instances.option._
       import scala.language.higherKinds
 
       //      implicit def autoComposedFunctor[A[_], B[_]](implicit functorA: Functor[A], functorB: Functor[B]) = functorA compose functorB
@@ -180,8 +180,8 @@ class FunctorsDemo extends ynfrastructure.Spec {
     }
 
     "functor maps almost like monad transformer (but does not flatmap)" in {
-      import cats.std.either._
-      import cats.std.option._
+      import cats.instances.either._
+      import cats.instances.option._
 
       val rsome: Either[String, Option[Int]] = Right(Some(10))
       val rnone: Either[String, Option[Int]] = Right(None)
@@ -198,7 +198,7 @@ class FunctorsDemo extends ynfrastructure.Spec {
 
       import cats._
       import cats.syntax.functor._
-      import cats.std.either._
+      import cats.instances.either._
 
 
       Functor[Either[String,?]].map(Right[String, Int](10): Either[String, Int])(_+1)
