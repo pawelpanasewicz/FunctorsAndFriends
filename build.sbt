@@ -3,7 +3,7 @@ lazy val root = (project in file(".")).
     name := "FunctorsAndFriends",
     scalaVersion := "2.11.6",
     libraryDependencies ++= Seq(
-      "org.spire-math" %% "cats" % catsVersion,
+      "org.typelevel" %% "cats" % catsVersion,
       "org.scalaz" %% "scalaz-core" % scalazVersion,
       "org.scalamacros" %% "resetallattrs" % resetAllAttrsVersion,
       compilerPlugin("org.scalamacros" % "paradise" % paradiseVersion cross CrossVersion.full),
@@ -22,7 +22,7 @@ lazy val root = (project in file(".")).
     )
   )
 
-lazy val catsVersion = "0.3.0"
+lazy val catsVersion = "0.7.2"
 lazy val scalazVersion = "7.2.2"
 lazy val scalacheckVersion = "1.12.4"
 lazy val resetAllAttrsVersion = "1.0.0-M1"
