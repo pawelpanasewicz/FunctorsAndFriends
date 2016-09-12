@@ -1,11 +1,17 @@
 package rng
 
+/**
+  * Base trait for Random Number Generator.
+  * It assumes functional approach - no mutable state inside.
+  */
 trait RNG {
   def run: Long
   def next: RNG
 }
 
-//based on spire.random.rng.Lcg64
+/**
+  * Some algorithm for generating random numbers. Based on spire.random.rng.Lcg64
+  */
 case class Lcg64(seed: Long) extends RNG {
   override lazy val run: Long = 6364136223846793005L * seed + 1442695040888963407L
   override lazy val next: RNG = Lcg64(run)
@@ -15,7 +21,9 @@ object Lcg64 {
   def fromSeed(seed: Long = System.currentTimeMillis()): Lcg64 = Lcg64(seed)
 }
 
-//based on spire.random.rng.Cmwc5
+/**
+  * Some algorithm for generating random numbers. Based on spire.random.rng.Cmwc5
+  */
 case class Cmwc5(x0: Long, x1: Long, x2: Long) extends RNG {
   override lazy val next: Cmwc5 = Cmwc5(x0 = x1, x1 = x2, x2 = v1)
   override lazy val run: Long = (x1 + x1 + 1) * v1
