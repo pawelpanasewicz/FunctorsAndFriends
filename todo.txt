@@ -1,0 +1,5 @@
+* Eval monad
+* Traverse
+* Writer
+* Writer monad tranformer Future[Writer[String, Int]]
+* Stacking more monads
