@@ -13,7 +13,7 @@ import scalaz.{-\/, \/-}
 
 class TransformersDemo extends ynfrastructure.Spec {
 
-  "Hello Monad Transformers" in {
+  "motivation" in {
 
     //given monad inside monad
     val x: Future[Option[String]] = Future{Some("Nested")}
@@ -30,40 +30,70 @@ class TransformersDemo extends ynfrastructure.Spec {
       } yield s"$x $y"
     }
 
+    //it works, but it is hard write code such way
     Await.result(xy, 100 millis).value mustBe "Nested Monads"
 
-
     //Let's rewrite it using Monad Transformers.
+    import cats.instances.future._ //cats.Functor[Future] is needed
 
-    //these are the same but wrapped inside Monad Transformer
-    val xT: OptionT[Future, String] = OptionT{x}
-    val yT: OptionT[Future, String] = OptionT{y}
+    //less caracters, looks cleaner, but result type is different
+    val xyT: OptionT[Future, String] = for {
+      x <- OptionT(x)
+      y <- OptionT(y)
+    } yield s"$x $y"
 
-    //now you need Functor for future, which is required by transformer
-    //this extra import solves it
+    //this is how you can get wrapped monad out of this transofmer
+    val xy2 = xyT.value
+
+    //and works as expected
+    Await.result(xy2, 100 millis).value mustBe "Nested Monads"
+
+
+    //Now lets see some more complex example when dealing with Future[Option[A]]
+
+    //given a functinon f: A => Future[Option[A]]
+    //it's not important what it does, just focus on signature
+    def distributionOfLetters(s: String): Future[Option[String]] = Future{
+      if(s == "") None
+      else Some (
+        s.foldLeft(Map[Char, Int]()) { case (acc, c) => acc.updated(c, 1 + acc.getOrElse(c, 0)) }
+          .toList
+          .sortBy(_._1)
+          .mkString(s"distribution of letters of '$s' is: ", ", ", "")
+      )
+    }
+
+    //as well, given some for comprehension when second value depends on first one
+    //note how ugly it is:
+    import cats.syntax.traverse._
     import cats.instances.future._
+    import cats.instances.option._
 
-    //compare uppor 'for' with this one
-    val xyT = for {
-      x <- xT
-      y <- yT
-    } yield s"$x $y"
+    val stringAndDescription: Future[Option[(String, String)]] = for {
+      x: Option[String] <- x
+      tmp1: Option[Future[Option[String]]] = x.map(x => distributionOfLetters(x))
+      tmp2: Future[Option[Option[String]]] = tmp1.sequenceU
+      tmp3: Future[Option[String]] = tmp2.map(_.flatten)
+      desc: Option[String] <- tmp3
+    } yield {
+      for {
+        x <- x
+        desc <- desc
+      } yield (x, desc)
+    }
 
-    //works as expected
-    Await.result(xyT.value, 100 millis).value mustBe "Nested Monads"
+    //it works
+    Await.result(stringAndDescription, 100 millis).value mustBe ("Nested","distribution of letters of 'Nested' is: (N,1), (d,1), (e,2), (s,1), (t,1)")
 
-    //Let's assume there is function from A => F[G[A]]
-    //How to hadnle it in here ?
+    //Ok, let's rewrite it using monad transformers:
+    val stringAndDescription2: OptionT[Future, (String, String)] = for {
+      x <- OptionT(x)
+      desc <- OptionT(distributionOfLetters(x))
+    } yield(x,desc)
 
-    def pretiffy(x: String): Future[Option[String]] = Future{if(x == "") None else Some(s">>>$x<<<")}
+    //and it works like previously
+    Await.result(stringAndDescription2.value, 100 millis).value mustBe ("Nested","distribution of letters of 'Nested' is: (N,1), (d,1), (e,2), (s,1), (t,1)")
 
-    val xyT2 = for {
-      x <- xT
-      y <- OptionT(pretiffy(x)) //or change put OptionT{...} to pretiffy
-    } yield s"$x $y"
-
-    //works like a charm
-    Await.result(xyT2.value, 100 millis).value mustBe "Nested >>>Nested<<<"
   }
 
 }
