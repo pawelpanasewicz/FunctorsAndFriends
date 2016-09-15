@@ -26,11 +26,12 @@ class HelloKleisli extends ynfrastructure.Spec {
     val faK = Kleisli[Option, String, Int](fa)
     val fbK = Kleisli[Option, Int, Double](fb)
     val fcK = faK.andThen(fbK)
+    val fcK2 = fbK.compose(faK)  //the same as fcK
 
     fcK.run("abc") mustBe Some(102.0/3.0)
     fcK.run("") mustBe None
-
-
+    fcK2.run("abc") mustBe Some(102.0/3.0)
+    fcK2.run("") mustBe None
   }
 
 }
