@@ -40,4 +40,5 @@ object Cmwc5 {
     val x2 = rng0.next.next.run
     Cmwc5(x0, x1, x2)
   }
+  val default: RNG = fromSeed(123123123123123L)
 }
