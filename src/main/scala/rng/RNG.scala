@@ -9,6 +9,12 @@ trait RNG {
   def next: RNG
 }
 
+object RNG {
+  lazy val default: RNG = defaultCmwc5
+  lazy val defaultCmwc5 = Cmwc5.default
+  lazy val defaultLcg64 = Lcg64.default
+}
+
 /**
   * Some algorithm for generating random numbers. Based on spire.random.rng.Lcg64
   */
@@ -19,6 +25,7 @@ case class Lcg64(seed: Long) extends RNG {
 
 object Lcg64 {
   def fromSeed(seed: Long = System.currentTimeMillis()): Lcg64 = Lcg64(seed)
+  val default: Lcg64 = fromSeed(123123123123123L)
 }
 
 /**
@@ -40,5 +47,5 @@ object Cmwc5 {
     val x2 = rng0.next.next.run
     Cmwc5(x0, x1, x2)
   }
-  val default: RNG = fromSeed(123123123123123L)
+  val default: Cmwc5 = fromSeed(123123123123123L)
 }
