@@ -12,7 +12,13 @@ object FreeMonadDemo {
   case class Tell(message: String) extends Interaction[Unit]
 
 }
-
+/**
+  * Why FreeMonads? Motivation is (based on https://www.youtube.com/watch?v=H28QqxO7Ihc):
+  * - Easier to transform, compose, reason about
+  * - Extensible effects
+  * - Reflection without remorse
+  * - Aspect-oriented programming
+  */
 class FreeMonadDemo extends ynfrastructure.Spec {
 
   "ubiquitous tutorial" in {
