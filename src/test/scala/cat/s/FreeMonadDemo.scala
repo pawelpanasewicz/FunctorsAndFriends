@@ -1,5 +1,7 @@
 package cat.s
 
+import java.util.concurrent.atomic.AtomicInteger
+
 import cats.{Monad, RecursiveTailRecM}
 import cats.free.Free
 
@@ -124,5 +126,44 @@ class FreeMonadDemo extends ynfrastructure.Spec {
     
     //and test it
     tester(`Q&A`) mustBe (List("Hello Harry Potter!"), ())
+
+    //this is how you can create interpeter which will draw the program
+
+    type Print[A] = (List[String], A)
+
+    object PrintInterpreter extends (Interaction ~> Print) {
+      var seq = -1
+      def nextAskId = {
+        seq=seq+1
+        s"q${seq}"
+      }
+
+      override def apply[A](fa: Interaction[A]): Print[A] = fa match {
+        case Ask(prompt) => (List(s"asking: $prompt -> $nextAskId"), nextAskId)
+        case Tell(message) => (List(s"telling: $message"), ())
+      }
+    }
+
+    //ther must be monad for Print
+    implicit val printMonad = new Monad[Print] {
+      override def flatMap[A, B](fa: (List[String], A))(f: (A) => (List[String], B)): (List[String], B) = {
+        val (list, a) = fa
+        val (list2, a2) = f(a)
+        (list ++ list2, a2)
+      }
+
+      override def pure[A](x: A): (List[String], A) = (Nil, x)
+      override def tailRecM[A, B](a: A)(f: (A) => (List[String], Either[A, B])): (List[String], B) = defaultTailRecM(a)(f)
+    }
+
+    implicit val recursiveTailRecMPrint: RecursiveTailRecM[Print] = RecursiveTailRecM.create[Print]
+
+    //let's run the pro using PrintInterpreter:
+
+    val printResult: (List[String], Unit) = prog.foldMap(PrintInterpreter)
+
+    //This is the one way to render program
+    printResult._1 mustBe List("asking: What is your first name? -> q0", "asking: What is your last name? -> q2", "telling: Hello q1 q3!")
+
   }
 }
