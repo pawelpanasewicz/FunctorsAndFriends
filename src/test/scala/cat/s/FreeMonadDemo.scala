@@ -67,7 +67,7 @@ class FreeMonadDemo extends ynfrastructure.Spec {
     }
 
     //And this is how you can run the program. Just call foldMap and pass the interpreter
-    prog.foldMap(ConsoleInterpreter)
+//    prog.foldMap(ConsoleInterpreter)
 
     
     //It is possible to create many other interpreters, depending on what you want to achieve
