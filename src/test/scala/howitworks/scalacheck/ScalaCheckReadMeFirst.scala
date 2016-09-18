@@ -1,4 +1,5 @@
 package howitworks.scalacheck
+import cats.laws.discipline.arbitrary
 import org.scalacheck
 import org.scalacheck.Test.{Parameters, Result}
 import org.scalacheck._
@@ -78,6 +79,16 @@ class ScalaCheckReadMeFirst extends ynfrastructure.Spec {
       size = num%10
       list <- Gen.listOfN(size, genBaby)
     } yield list
+
+    //generating more complex structures:
+
+    def genMap: Gen[Map[String,String]] = for {
+      size <- Gen.size
+      keys <- Gen.containerOfN[List, String](size, Arbitrary.arbitrary[String])
+      values <- Gen.containerOfN[List, String](size, Arbitrary.arbitrary[String])
+    } yield keys.zip(values).toMap
+
+    genMap(Gen.Parameters.default.withSize(10), seed).value mustBe Map("" -> "ﰂ㜉䆃Ɑ⌀訜轺桖", "㡹䪭뀊갊ퟯ园" -> "컖", "ీ䙷遶但뫱㹋㞀˄" -> "", "䇪⋇画ෲ東戔唂" -> "烹ດ朅딲뻣", "ጊ" -> "❮唾​麆", "쨓⇄ꭃ쓵詥" -> "糐柭ᙷᶡ", "쇃缑" -> "鎌鱁涰", "䉴즗" -> "넌િ⯔敧謡", "٫泆ớ⯏" -> "")
 
 
 
