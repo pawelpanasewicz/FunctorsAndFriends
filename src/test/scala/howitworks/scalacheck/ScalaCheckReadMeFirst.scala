@@ -2,6 +2,7 @@ package howitworks.scalacheck
 import org.scalacheck
 import org.scalacheck.Test.{Parameters, Result}
 import org.scalacheck._
+import org.scalacheck.rng.Seed
 
 class ScalaCheckReadMeFirst extends ynfrastructure.Spec {
 
@@ -16,15 +17,20 @@ class ScalaCheckReadMeFirst extends ynfrastructure.Spec {
       //If settings are to much restricted and there is no way to generate T instance, the None is returend
       //(Lists with size < 0 - no way to do this, this is why Option is used here)
       trait Gen[T] {
-        def apply(genParameters: Gen.Parameters): Option[T]
+        def apply(genParameters: Gen.Parameters, seed: Seed): Option[T]
       }
     }
 
     //In order to create generators, you can use convenient constructors
     val gen123: Gen[Int] = Gen.oneOf(1,2,3) //this will create generator which can generate only 3 numbers
 
+    //generators need seed for random values
+    val seed = Seed.apply(1234L)
+
     //let's test it
-    List.fill(1000)(gen123.apply(Gen.Parameters.default)) must contain only (Some(1), Some(2), Some(3))
+    //! This will not work, because it receives always the same seed
+    //List.fill(1000)(gen123.apply(Gen.Parameters.default, seed)) must contain only (Some(1), Some(2), Some(3))
+    List.fill(1000)(gen123.apply(Gen.Parameters.default, Seed.random())) must contain only (Some(1), Some(2), Some(3))
 
     //there are default generators defined by scalacheck
 
@@ -40,11 +46,11 @@ class ScalaCheckReadMeFirst extends ynfrastructure.Spec {
       nameFirstLetter <- upperCharGen
       restOfName <- stringGen
       name = nameFirstLetter + restOfName
-      classRoomNo <- gen123
-    } yield Baby(name, classRoomNo)
+      age <- gen123
+    } yield Baby(name, age)
 
     //usage is as previously
-    genBaby(Gen.Parameters.default)
+    genBaby(Gen.Parameters.default, seed)
 
 
     //Generating dynamic structures is possible
@@ -56,16 +62,14 @@ class ScalaCheckReadMeFirst extends ynfrastructure.Spec {
     //The max size of list comes from Gen.Parameters
     //it defaults to 100
 
-    val someBabys: Option[List[Baby]] = listGen(Gen.Parameters.default)
+    val someBabys: Option[List[Baby]] = listGen(Gen.Parameters.default, seed)
     someBabys.value.length must be <= 100 //this assrtion is very waek, I know ...
 
     //It's possible to change default size param
-    //... I don't know why it is not just a case class .....
-    object CustomGenParams extends Gen.Parameters.Default {
-      override val size: Int = 10
-    }
+    //... I don't know why it is not just a case class ..... it contains only size param
+    val customGenParams = Gen.Parameters.default.withSize(10)
 
-    val someSmallListOfBabys: Option[List[Baby]] = listGen(CustomGenParams)
+    val someSmallListOfBabys: Option[List[Baby]] = listGen(customGenParams, seed)
     someSmallListOfBabys.value.length must be <= 10 //this assrtion is very waek, I know ...
 
     //Another way to generate customary sized list is to generate size and use Gen.listOfN
