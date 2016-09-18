@@ -31,7 +31,7 @@ class TransformersDemo extends ynfrastructure.Spec {
     }
 
     //it works, but it is hard write code such way
-    Await.result(xy, 100 millis).value mustBe "Nested Monads"
+    Await.result(xy, 500 millis).value mustBe "Nested Monads"
 
     //Let's rewrite it using Monad Transformers.
     import cats.instances.future._ //cats.Functor[Future] is needed
@@ -46,7 +46,7 @@ class TransformersDemo extends ynfrastructure.Spec {
     val xy2 = xyT.value
 
     //and works as expected
-    Await.result(xy2, 100 millis).value mustBe "Nested Monads"
+    Await.result(xy2, 500 millis).value mustBe "Nested Monads"
 
 
     //Now lets see some more complex example when dealing with Future[Option[A]]
