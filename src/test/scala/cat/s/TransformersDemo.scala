@@ -2,13 +2,13 @@ package cat.s
 
 import java.util.concurrent.Executors
 
-import cats.data.{OptionT, Xor}
+import cats.data.{OptionT, Writer, Xor}
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
-import scalaz.{-\/, \/-}
+import scalaz.{-\/, WriterT, \/-}
 
 
 class TransformersDemo extends ynfrastructure.Spec {
@@ -83,7 +83,7 @@ class TransformersDemo extends ynfrastructure.Spec {
     }
 
     //it works
-    Await.result(stringAndDescription, 100 millis).value mustBe ("Nested","distribution of letters of 'Nested' is: (N,1), (d,1), (e,2), (s,1), (t,1)")
+    Await.result(stringAndDescription, 500 millis).value mustBe ("Nested","distribution of letters of 'Nested' is: (N,1), (d,1), (e,2), (s,1), (t,1)")
 
     //Ok, let's rewrite it using monad transformers:
     val stringAndDescription2: OptionT[Future, (String, String)] = for {
@@ -92,7 +92,7 @@ class TransformersDemo extends ynfrastructure.Spec {
     } yield(x,desc)
 
     //and it works like previously
-    Await.result(stringAndDescription2.value, 100 millis).value mustBe ("Nested","distribution of letters of 'Nested' is: (N,1), (d,1), (e,2), (s,1), (t,1)")
+    Await.result(stringAndDescription2.value, 500 millis).value mustBe ("Nested","distribution of letters of 'Nested' is: (N,1), (d,1), (e,2), (s,1), (t,1)")
 
   }
 
