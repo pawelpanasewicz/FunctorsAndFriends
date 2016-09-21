@@ -140,6 +140,8 @@ class AboutSets extends ynfrastructure.Spec {
     // > or >= or < or <=
     // - Ex2. There is relation between strings, for example telling if string A has more letters than string B
     // - Ex3. There is relation between types telling that type A is super type of B
+    // - Ex4. Given function f: A => B. Objects from Set A and Set B are in relation where for y = f(x) and y belongs to B, x belongs to A
+
     //  etc
     // Ex1 and Ex2 can be defined using below piece of code, which will tell if two scala objects are in realtion or no.
 
@@ -157,6 +159,14 @@ class AboutSets extends ynfrastructure.Spec {
     def ex3V2[A, B](a: A <:< B) = ()
     //I still don't fully understand how does this expression work
     //but for sure these ~25k characters should definitely shed some more light on it - http://scalabound.org/?p=323
+    //ad Ex4.
+    //given some function Int => String
+    def f(i: Int): String = (i+100).toString
+    //we can say that somee Int and Strnig are in relation where for given pair(x: Int, y: String)
+    val (x,y): (Int, String) = (100, "200")
+    //this is true:
+    f(x) == y //is it true?
+    //(In this case relation can be described as well using function between two types)
 
     //Taking these scraps together man could understand that there is some considered Set of some objects (o1, o2, ...)
     //and taking any two objects freom this set we can state
