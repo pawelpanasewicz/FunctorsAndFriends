@@ -167,6 +167,7 @@ class AboutSets extends ynfrastructure.Spec {
     //this is true:
     f(x) == y //is it true?
     //(In this case relation can be described as well using function between two types)
+    //... but there are relations, which can not be expressed using funcions, because function for given X can have only one Y and relations not...
 
     //Taking these scraps together man could understand that there is some considered Set of some objects (o1, o2, ...)
     //and taking any two objects freom this set we can state
