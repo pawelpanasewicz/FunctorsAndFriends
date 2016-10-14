@@ -6,6 +6,8 @@ import rng.{Cmwc5, RNG}
 
 class RunNStateDemo extends ynfrastructure.Spec {
 
+  //Conclusion: don't use 'sequence' if you don't care about intermediate results
+
   "run State[S,A] computation many times and get the last result" - {
 
     //some State returning random longs or another description of computation
@@ -41,7 +43,57 @@ class RunNStateDemo extends ynfrastructure.Spec {
 
       //result is the same as previously
       runN(iterations, nextLong, Cmwc5.default)._2 mustBe expectedLong
-      //~100ms on my laptop
+      //~80ms on my laptop
+    }
+
+    "run using stream and remember all results" in {
+
+      val s = {
+        var state = Cmwc5.default
+        Stream.continually {
+          val ret = state.run
+          state = state.next
+          ret
+        }
+      }
+
+
+      s.apply(iterations-1) mustBe expectedLong
+      //~77ms on my laptop
+
+      //another approaches
+      val s2 =  {
+        var state = Cmwc5.default
+        state #:: Stream.continually{
+          state = state.next
+          state
+        }
+      }
+
+      s2.apply(iterations-1).run mustBe expectedLong
+
+      val s3 =  {
+        var state = nextLong.run(Cmwc5.default).value
+        state #:: Stream.continually{
+          state = nextLong.run(state._1).value
+          state
+        }
+      }
+      s3.apply(iterations-1)._2 mustBe expectedLong
+    }
+
+    "run using stream but drop all results" in {
+      val s = {
+        var state = Cmwc5.default
+        Stream.continually {
+          val ret = state.run
+          state = state.next
+          ret
+        }
+      }
+
+      s.drop(iterations-1).head mustBe expectedLong
+      //~71ms on my laptop
     }
 
   }
