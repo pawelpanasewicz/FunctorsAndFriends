@@ -6,6 +6,9 @@ lazy val root = (project in file(".")).
     libraryDependencies ++= Seq(
       "org.typelevel" %% "cats" % catsVersion,// exclude("org.scalacheck", "scalacheck_2.11" /*1.12.5*/),
       "org.scalaz" %% "scalaz-core" % scalazVersion,
+      "org.scalaz" %% "scalaz-effect" % scalazVersion,
+      "org.scalaz" %% "scalaz-concurrent" % scalazVersion,
+      "org.scalaz" %% "scalaz-iteratee" % scalazVersion,
       "org.spire-math" %% "spire" % spireMathVerion,
       "org.scalamacros" %% "resetallattrs" % resetAllAttrsVersion,
       compilerPlugin("org.scalamacros" % "paradise" % paradiseVersion cross CrossVersion.full),
